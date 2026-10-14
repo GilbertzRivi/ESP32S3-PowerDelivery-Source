@@ -20,13 +20,25 @@ Most of it started as "it would be nice to see what's going on" and then got out
 ## Web page
 
 `http://ladowarka.local` on the local network ("ladowarka" is Polish for "charger").
+Three tabs, all updating live.
 
-- **Status:** the same values as the display, the PD contract, Current Limit state, temperature and
-  fan, total energy, and a live list of PD messages (RX/TX, SOP, type, MessageID, first data
-  object).
-- **Log:** the text log, with Save. Also the raw defmt log, with Save.
-- **System:** firmware version and OTA slot, uptime, last reset reason, heap and stack use of both
-  cores, watchdog gaps, INA219 bad reads, faults, ADC calibration with a chart.
+<p>
+  <img src="../images/status.jpg" alt="Status tab" width="32%">
+  <img src="../images/log.jpg" alt="Log tab" width="32%">
+  <img src="../images/system.jpg" alt="System tab" width="32%">
+</p>
+
+- **Status:** the same values as the display, plus the converter voltage and its target, the PPS
+  current limit (and whether it's active right now), temperature and fan, faults, total energy and the clock.
+  Below that a live list of PD messages: time, RX/TX, SOP, type, MessageID and the first data object.
+  On the screenshot the Samsung asks for 10.2 V / 2.3 A over PPS and checks the battery every few seconds.
+- **Log:** the text log (boot with firmware version and reset reason, watchdog records, clock, faults...)
+  with Save and Clear. The raw defmt log is kept next to it, also with Save and Clear.
+- **System:** firmware version and OTA slot, uptime, last reset reason, heap now and at peak, stack of
+  both cores, the longest silence of the PD core and of the display/WiFi side, the supervisor gap,
+  INA219 bad reads and faults. The stack and watchdog values are the worst since the last reset.
+- The System tab also shows the ADC calibration from this boot: 9 points and a chart of the raw
+  reading minus the voltage set by the DAC. The raw ADC is off by up to ~200 mV, so the table is not optional.
 
 ## WiFi setup
 
@@ -36,7 +48,7 @@ Most of it started as "it would be nice to see what's going on" and then got out
 
 ## Logs
 
-- defmt log over TCP: `nc ladowarka.local 19021 | defmt-print -e <elf>`
+- defmt log over TCP: `nc ladowarka.local 19021 | defmt-print -e <elf>`, or saved from the Log tab.
 - Every PD message gets logged as `PD rx/tx SOP <name> id <n> <first object>`, and every Hard Reset
   of mine comes with a reason. This saved me more times than I can count.
 
@@ -53,7 +65,8 @@ Most of it started as "it would be nice to see what's going on" and then got out
 
 ## Safety
 
-- Hardware watchdog (TIMG1, 3 s). It only gets fed while both the PD core and the display/WiFi side are alive.
+- Hardware watchdog (TIMG1, 3 s). It only gets fed while both the PD core and the display/WiFi side are alive
+  (the PD core may stay silent for at most 1 s, the display/WiFi side for 3 s).
   A reset drops GPIO15, which opens the VBUS switch, so a hung firmware can't leave 20 V on the port.
 - Power supervisor: overvoltage, undervoltage, overload, VBUS with the switch open, temperature.
   Repeated faults latch the output off until the BOOT button is pressed.
