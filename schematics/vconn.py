@@ -1,0 +1,31 @@
+# VCONN switch, one per CC line (GPIO40 -> CC1, GPIO39 -> CC2).
+from common import *
+with schemdraw.Drawing(file='vconn.svg', show=False) as d:
+    d.config(bgcolor='white')
+    xp, ytop = 5.0, 2.0
+    d += elm.Vdd().at((xp, ytop)).label('+5 V')
+    d += (qp := elm.BjtPnp(circle=True).theta(0).anchor('emitter').at((xp, ytop - 0.6)).label('BC557', loc='right', ofst=(0.1, 0.0)))
+    W(d, (xp, ytop), qp.emitter)
+    B = Point((xp - 1.8, qp.base.y))
+    W(d, qp.base, B)
+    d += elm.Dot().at(B)
+    d += elm.Resistor().at(B).up().to((B.x, ytop)).label('10k')
+    W(d, (B.x, ytop), (xp, ytop))
+    d += elm.Dot().at((xp, ytop))
+    d += elm.Resistor().at(B).down().length(2.0).label('2.2k')
+    d += (qn := elm.BjtNpn(circle=True).theta(0).anchor('collector').label('BC547', loc='right', ofst=(0.1, 0.0)))
+    d += elm.Ground().at(qn.emitter)
+    N = Point((qn.base.x - 1.6, qn.base.y))
+    W(d, qn.base, N)
+    d += elm.Dot().at(N)
+    d += elm.Resistor().at(N).down().length(1.8).label('4.7k', loc='bottom')
+    d += elm.Ground()
+    d += elm.Resistor().at(N).left().length(2.2).label('4.7k')
+    d += (lg := elm.Line().left().length(0.6))
+    lab(d, lg.end, 'GPIO40 (CC1)\nGPIO39 (CC2)', loc='left')
+    # output: collector -> BAT85 -> receptacle CC
+    d += elm.Schottky().at(qp.collector).down().length(2.4).label('BAT85', loc='bottom')
+    d += elm.Line().down().length(0.8)
+    d += elm.Line().right().length(1.4)
+    d += (o := elm.Dot())
+    lab(d, o.center, 'CC receptacle\n(drain of Qp)', loc='right')
