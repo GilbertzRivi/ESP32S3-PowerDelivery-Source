@@ -69,6 +69,12 @@ All logic and features are controlled by the ESP32-S3.
 I want to release the code for the board in a form of a rust library, but it needs more time to polish and testing.
 Currently I have it working on both sink and source devices.
 
+The library will be GPL-3.0, with a commercial license available for closed firmware.
+
+I am also building a web decoder for PD captures, so you can paste a hex dump, a logic analyzer export 
+or plug in the scope and read the whole negotiation in your browser. If you want a ping when it is live,
+or you have captures from chargers and cables that misbehave, write to me: `oktawia.handerek@gmail.com`
+
 ## Prior art
 
 g3gg0 did USB PD on an ESP32 with the RMT peripheral before me, as a sink and
@@ -88,8 +94,11 @@ certification.
 Everything in this repository (docs, photos, schematics and their scripts) is licensed under
 [CC BY-NC-SA 4.0](LICENSE). You can build it, change it and share it for non-commercial use, as long as
 you credit me and share your changes under the same license.
-If you want to use it commercially, ask me first.
+If you want to use it commercially, write to me first: `oktawia.handerek@gmail.com`
+
+I also take fixed-price PD work. I can make a negotiation diagnosis from a capture, or add
+source/sink integration into your own MCU firmware.
 
 ## Disclaimer
 
-The project was made with the help of an AI, model used: Claude Opus 5.5
+The firmware was made with the help of an AI. 
